@@ -13,7 +13,6 @@ app.get("/hogwarts", async (req, res) => {
     console.table(result.rows);
     res.json(result.rows);
   } catch (error) {
-    console.error("Failed to fetch houses:", error.message);
     res.status(500).json({ error: "Could not fetch houses" });
   }
 });
@@ -23,7 +22,6 @@ app.get("/db-test", async (req, res) => {
     const result = await pool.query("SELECT NOW() AS current_time");
     res.json({ connected: true, currentTime: result.rows[0].current_time });
   } catch (error) {
-    console.error("PostgreSQL connection failed:", error.message);
     res.status(503).json({ connected: false, error: "Database unavailable" });
   }
 });
