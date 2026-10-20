@@ -6,26 +6,89 @@ const port = 3000;
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json()); // parse JSON bodies
 
-app.get("/hogwarts", async (req, res) => {
+// get all houses
+app.get("/houses", async (req, res) => {
   try {
     const result = await pool.query("SELECT * FROM houses");
 
     console.table(result.rows);
     res.json(result.rows);
-  } catch (error) {
-    res.status(500).json({ error: "Could not fetch houses" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "database error", code: err.code });
   }
 });
 
-app.get("/db-test", async (req, res) => {
+// get specific house
+app.get("/houses/:id", async (req, res) => {
   try {
-    const result = await pool.query("SELECT NOW() AS current_time");
-    res.json({ connected: true, currentTime: result.rows[0].current_time });
-  } catch (error) {
-    res.status(503).json({ connected: false, error: "Database unavailable" });
+    const one = await pool.query("SELECT * FROM houses WHERE id = $1", [req.params.id]);
+    if (one.rowCount === 0) return res.sendStatus(404);
+    res.status(200).json(one.rows[0]);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "database error" });
   }
 });
 
+
+// ---- Teachers ---- //
+
+// get all teachers
+app.get("/teachers", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT * FROM teachers");
+
+    console.table(result.rows);
+    res.json(result.rows);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "database error", code: err.code });
+  }
+});
+
+// get specific teacher
+app.get("/teachers/:id", async (req, res) => {
+  try {
+    const one = await pool.query("SELECT * FROM teachers WHERE id = $1", [req.params.id]);
+    if (one.rowCount === 0) return res.sendStatus(404);
+    res.status(200).json(one.rows[0]);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "database error" });
+  }
+});
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`);
+});
+
+
+// ---- students ---- //
+
+// get all students
+app.get("/students", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT * FROM students");
+
+    console.table(result.rows);
+    res.json(result.rows);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "database error", code: err.code });
+  }
+});
+
+// get specific student
+app.get("/students/:id", async (req, res) => {
+  try {
+    const one = await pool.query("SELECT * FROM students WHERE id = $1", [req.params.id]);
+    if (one.rowCount === 0) return res.sendStatus(404);
+    res.status(200).json(one.rows[0]);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "database error" });
+  }
+});
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
