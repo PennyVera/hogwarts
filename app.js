@@ -1,18 +1,30 @@
-const express = require("express");
-const pool = require("./db");
+import express from "express";
+
+import { pool } from "./db.js";
+import * as housesRepository from "./repositories/houses.repository.js";
+
 const app = express();
+app.use(express.json());
 const port = 3000;
 
 app.use(express.urlencoded({ extended: true }));
-app.use(express.json()); // parse JSON bodies
+app.use(express.json());
 
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`);
+});
+
+// root route message
+app.get("/", (req, res) => {
+  res.send("welcome to Hogwarts API");
+});
+
+// ---- Houses ---- //
 // get all houses
 app.get("/houses", async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM houses");
-
-    console.table(result.rows);
-    res.json(result.rows);
+    const allHouses = await housesRepository.getAllHouses();
+    res.json(allHouses);
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: "database error", code: err.code });
@@ -30,7 +42,6 @@ app.get("/houses/:id", async (req, res) => {
     res.status(500).json({ error: "database error" });
   }
 });
-
 
 // ---- Teachers ---- //
 
@@ -58,11 +69,6 @@ app.get("/teachers/:id", async (req, res) => {
     res.status(500).json({ error: "database error" });
   }
 });
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
-});
-
-
 // ---- students ---- //
 
 // get all students
@@ -88,7 +94,4 @@ app.get("/students/:id", async (req, res) => {
     console.log(err);
     res.status(500).json({ error: "database error" });
   }
-});
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
 });
