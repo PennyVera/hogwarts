@@ -1,0 +1,28 @@
+get single teacher
+    get /teachers/:id
+
+    find id'et fra routen (requesten)
+
+    find det element i databasen med det id
+
+    hvis der ikke var noget - return 404
+    ellers: lav elementet om til json
+    returner det med en 200
+
+
+
+put single teacher
+    put /teachers/:id
+    
+    find id'et fra routen (req)
+    
+    hvis der ikke var noget - return 404
+    ellers:
+        tag nye informationer og overskiv eksiterende element
+
+
+
+
+
+put /teachers/:id
+find 
