@@ -1,8 +1,13 @@
 import express from "express";
 
-import { pool } from "./db.js";
-import * as housesController from "./controllers/houses.controller.js";
-import * as teachersController from "./controllers/teachers.controller.js";
+// import { pool } from "./db.js";
+// imports controllers
+
+// import routers
+import { housesRouter } from "./routes/houses.router.js";
+import { teachersRouter } from "./routes/teachers.router.js";
+import { studentsRouter } from "./routes/students.router.js";
+import { coursesRouter } from "./routes/courses.router.js";
 
 const app = express();
 app.use(express.json());
@@ -21,46 +26,13 @@ app.get("/", (req, res) => {
 });
 
 // ---- Houses ---- //
-// Get all houses R
-app.get("/houses", housesController.getAllHouses);
-
-// Get specific house R
-app.get("/houses/:id", housesController.getSingleHouse);
+app.use("/houses/", housesRouter);
 
 // ---- Teachers ---- //
-// Get all teachers R
-app.get("/teachers", teachersController.getAllTeachers);
-// Get specific teacher R
-app.get("/teachers/:id", teachersController.getSingleTeacher);
-// Post new teacher C
-app.post("/teachers", teachersController.createTeacher);
-// Put teacher U
-app.put("/teachers/:id", teachersController.updateTeacher);
-// Delete teacher D
-app.delete("/teachers/:id", teachersController.deleteTeacher);
+app.use("/teachers/", teachersRouter);
 
-// ---- students ---- //
-// get all students
-app.get("/students", async (req, res) => {
-  try {
-    const result = await pool.query("SELECT * FROM students");
+// ---- Students ---- //
+app.use("/students/", studentsRouter);
 
-    console.table(result.rows);
-    res.json(result.rows);
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ error: "database error", code: err.code });
-  }
-});
-
-// get specific student
-app.get("/students/:id", async (req, res) => {
-  try {
-    const one = await pool.query("SELECT * FROM students WHERE id = $1", [req.params.id]);
-    if (one.rowCount === 0) return res.sendStatus(404);
-    res.status(200).json(one.rows[0]);
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ error: "database error" });
-  }
-});
+// ---- Courses ---- //
+app.use("/courses/", coursesRouter);
