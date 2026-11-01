@@ -1,6 +1,6 @@
 import { pool } from "../db.js";
 
-// get all courses
+// Get all courses
 export const getAllCourses = async () => {
   const result = await pool.query(
     `SELECT courses.*,
@@ -19,7 +19,7 @@ export const getAllCourses = async () => {
   return result.rows;
 };
 
-// get single course
+// Get a single course
 export const getSingleCourse = async (id) => {
   return pool.query(
     `SELECT courses.*,
@@ -37,19 +37,16 @@ export const getSingleCourse = async (id) => {
   );
 };
 
-// create a new course
+// Create a new course
 export const createCourse = async (req, res) => {
-  // get the name and house_id from the request body
-  const { name, teacher_id, student_id } = req.body;
+  const { name, teacher_id } = req.body;
 
-  // insert the new course into the database
   const result = await pool.query("INSERT INTO courses (name, teacher_id) VALUES ($1, $2) RETURNING *", [name, teacher_id]);
 
-  // return the newly created course
   return result.rows[0];
 };
 
-// update a course
+// Update a course
 export const updateCourse = async (id, name, teacher_id) => {
   const result = await pool.query(
     `UPDATE courses
@@ -62,6 +59,7 @@ export const updateCourse = async (id, name, teacher_id) => {
   return result;
 };
 
+// Change the teacher assigned to a course
 export const updateCourseTeacher = async (courseId, teacherId) => {
   return pool.query(
     `UPDATE courses
@@ -72,6 +70,7 @@ export const updateCourseTeacher = async (courseId, teacherId) => {
   );
 };
 
+// Add a student to a course
 export const addStudentToCourse = async (courseId, studentId) => {
   return pool.query(
     `INSERT INTO courses_students (course_id, student_id)
@@ -81,6 +80,7 @@ export const addStudentToCourse = async (courseId, studentId) => {
   );
 };
 
+// Remove a student from a course
 export const removeStudentFromCourse = async (courseId, studentId) => {
   return pool.query(
     `DELETE FROM courses_students
@@ -90,7 +90,7 @@ export const removeStudentFromCourse = async (courseId, studentId) => {
   );
 };
 
-// delete a course
+// Delete a course
 export const deleteCourse = async (id) => {
   const client = await pool.connect();
 

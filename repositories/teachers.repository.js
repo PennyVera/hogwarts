@@ -1,37 +1,27 @@
 import { pool } from "../db.js";
 
-// get all teachers
+// Get all teachers
 export const getAllTeachers = async () => {
-  // query the database for all teachers
   const result = await pool.query("SELECT * FROM teachers");
-  // return the teachers
-  console.table(result.rows);
   return result.rows;
 };
 
-// get single teacher
+// Get a single teacher
 export const getSingleTeacher = async (id) => {
-  // get the chosen teachers id
-  // query the database for the teacher with that id
   const one = await pool.query("SELECT * FROM teachers WHERE id = $1", [id]);
-  // return the teacher
   return one;
 };
 
-// create a new teacher
+// Create a new teacher
 export const createTeacher = async (req, res) => {
-  // get the name and house_id from the request body
   const { name, house_id } = req.body;
 
-  // insert the new teacher into the database
   const result = await pool.query("INSERT INTO teachers (name, house_id) VALUES ($1, $2) RETURNING *", [name, house_id]);
 
-  // return the newly created teacher
   return result.rows[0];
 };
 
-// update a teacher
-// repositories/teachers.repository.js
+// Update a teacher
 export const updateTeacher = async (id, name, house_id) => {
   const result = await pool.query(
     `UPDATE teachers
@@ -44,7 +34,7 @@ export const updateTeacher = async (id, name, house_id) => {
   return result;
 };
 
-// delete a teacher
+// Delete a teacher
 export const deleteTeacher = async (id) => {
   const client = await pool.connect();
 
