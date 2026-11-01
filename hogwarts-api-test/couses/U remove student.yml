@@ -1,0 +1,15 @@
+info:
+  name: U remove student
+  type: http
+  seq: 1
+
+http:
+  method: DELETE
+  url: http://localhost:3000/courses/9/students/6
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
