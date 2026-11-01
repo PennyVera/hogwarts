@@ -1,0 +1,21 @@
+info:
+  name: U add student to course
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: http://localhost:3000/courses/9/students
+  body:
+    type: json
+    data: |
+      {
+        "student_id": 6
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
