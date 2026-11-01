@@ -6,7 +6,6 @@ export const getAllHouses = async (req, res) => {
     const allHouses = await housesRepository.getAllHouses();
     res.json(allHouses);
   } catch (err) {
-    console.log(err);
     res.status(500).json({ error: "database error", code: err.code });
   }
 };
@@ -18,7 +17,6 @@ export const getSingleHouse = async (req, res) => {
     if (one.rowCount === 0) return res.sendStatus(404);
     res.status(200).json(one.rows[0]);
   } catch (err) {
-    console.log(err);
-    res.status(500).json({ error: "database error" });
+    res.status(500).json({ error: "database error", code: err.code });
   }
 };
