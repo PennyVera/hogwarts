@@ -5,10 +5,10 @@ info:
 
 http:
   method: PUT
-  url: PUT http://localhost:3000/courses/9/teacher
+  url: http://localhost:3000/courses/9/teacher
   body:
     type: json
-    data: |
+    data: |-
       {
         "teacher_id": 11
       }
