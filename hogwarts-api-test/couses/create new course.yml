@@ -1,0 +1,22 @@
+info:
+  name: create new course
+  type: http
+  seq: 3
+
+http:
+  method: POST
+  url: http://localhost:3000/courses
+  body:
+    type: json
+    data: |-
+      {
+        "name":"potion",
+        "teacher_id":"5"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
