@@ -1,9 +1,9 @@
-import * as studentsRepository from "../repositories/students.repository.js";
+import * as repository from "../repositories/students.repository.js";
 
 // Get all students
 export const getAllStudents = async (req, res) => {
   try {
-    const allStudents = await studentsRepository.getAllStudents();
+    const allStudents = await repository.getAllStudents();
     res.json(allStudents);
   } catch (err) {
     res.status(500).json({ error: "database error", code: err.code });
@@ -13,7 +13,7 @@ export const getAllStudents = async (req, res) => {
 // Get a single student
 export const getSingleStudent = async (req, res) => {
   try {
-    const singleStudent = await studentsRepository.getSingleStudent(req.params.id);
+    const singleStudent = await repository.getSingleStudent(req.params.id);
     if (singleStudent.rowCount === 0) return res.sendStatus(404);
     res.status(200).json(singleStudent.rows[0]);
   } catch (err) {
@@ -24,7 +24,7 @@ export const getSingleStudent = async (req, res) => {
 // Create a new student
 export const createStudent = async (req, res) => {
   try {
-    const newStudent = await studentsRepository.createStudent(req, res);
+    const newStudent = await repository.createStudent(req, res);
     res.status(201).json(newStudent);
   } catch (err) {
     res.status(500).json({ error: "database error", code: err.code });
@@ -36,7 +36,7 @@ export const deleteStudent = async (req, res) => {
   // Get the selected student ID
   const { id } = req.params;
   try {
-    const result = await studentsRepository.deleteStudent(id);
+    const result = await repository.deleteStudent(id);
     if (result.rowCount === 0) {
       return res.sendStatus(404);
     }
@@ -56,7 +56,7 @@ export const updateStudent = async (req, res) => {
   const { name, house_id, semester } = req.body;
 
   try {
-    const result = await studentsRepository.updateStudent(id, name, house_id, semester);
+    const result = await repository.updateStudent(id, name, house_id, semester);
 
     if (result.rowCount === 0) {
       return res.sendStatus(404);

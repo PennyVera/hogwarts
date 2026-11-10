@@ -1,21 +1,21 @@
 import express from "express";
-import * as coursesController from "../controllers/courses.controller.js";
+import * as controller from "../controllers/courses.controller.js";
 
-export const coursesRouter = express.Router();
+export const router = express.Router();
 
 // get all courses R
-coursesRouter.get("/", coursesController.getAllCourses);
+router.get("/", controller.getAllCourses);
 // get specific course R
-coursesRouter.get("/:id", coursesController.getSingleCourse);
+router.get("/:id", controller.getSingleCourse);
 // create new course C
-coursesRouter.post("/", coursesController.createCourse);
+router.post("/", controller.createCourse);
 // delete a course D
-coursesRouter.delete("/:id", coursesController.deleteCourse);
+router.delete("/:id", controller.deleteCourse);
 // update a course U
-coursesRouter.put("/:id", coursesController.updateCourse);
+router.put("/:id", controller.updateCourse);
 // change the teacher assigned to a course
-coursesRouter.put("/:courseId/teacher", coursesController.updateCourseTeacher);
+router.put("/:courseId/teacher", controller.updateCourseTeacher);
 // add a student to a course
-coursesRouter.post("/:courseId/students", coursesController.addStudentToCourse);
+router.post("/:courseId/students", controller.addStudentToCourse);
 // remove a student from a course
-coursesRouter.delete("/:courseId/students/:studentId", coursesController.removeStudentFromCourse);
+router.delete("/:courseId/students/:studentId", controller.removeStudentFromCourse);

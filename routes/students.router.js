@@ -1,15 +1,15 @@
 import express from "express";
-import * as studentsController from "../controllers/students.controller.js";
+import * as controller from "../controllers/students.controller.js";
 
-export const studentsRouter = express.Router();
+export const router = express.Router();
 
 // get all students R
-studentsRouter.get("/", studentsController.getAllStudents);
+router.get("/", controller.getAllStudents);
 // get specific student R
-studentsRouter.get("/:id", studentsController.getSingleStudent);
+router.get("/:id", controller.getSingleStudent);
 // create new student C
-studentsRouter.post("/", studentsController.createStudent);
+router.post("/", controller.createStudent);
 // delete a student D
-studentsRouter.delete("/:id", studentsController.deleteStudent);
+router.delete("/:id", controller.deleteStudent);
 // update a student U
-studentsRouter.put("/:id", studentsController.updateStudent);
+router.put("/:id", controller.updateStudent);

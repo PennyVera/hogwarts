@@ -1,9 +1,9 @@
-import * as coursesRepository from "../repositories/courses.repository.js";
+import * as repository from "../repositories/courses.repository.js";
 
 // Get all courses
 export const getAllCourses = async (req, res) => {
   try {
-    const allCourses = await coursesRepository.getAllCourses();
+    const allCourses = await repository.getAllCourses();
     res.json(allCourses);
   } catch (err) {
     res.status(500).json({ error: "database error", code: err.code });
@@ -13,7 +13,7 @@ export const getAllCourses = async (req, res) => {
 // Get a single course
 export const getSingleCourse = async (req, res) => {
   try {
-    const singleCourse = await coursesRepository.getSingleCourse(req.params.id);
+    const singleCourse = await repository.getSingleCourse(req.params.id);
     if (singleCourse.rowCount === 0) return res.sendStatus(404);
     res.status(200).json(singleCourse.rows[0]);
   } catch (err) {
@@ -25,7 +25,7 @@ export const getSingleCourse = async (req, res) => {
 export const createCourse = async (req, res) => {
   // The request body contains the course name and teacher ID.
   try {
-    const newCourse = await coursesRepository.createCourse(req, res);
+    const newCourse = await repository.createCourse(req, res);
     res.status(201).json(newCourse);
   } catch (err) {
     res.status(500).json({ error: "database error", code: err.code });
@@ -37,7 +37,7 @@ export const deleteCourse = async (req, res) => {
   // Get the selected course ID
   const { id } = req.params;
   try {
-    const result = await coursesRepository.deleteCourse(id);
+    const result = await repository.deleteCourse(id);
     if (result.rowCount === 0) {
       return res.sendStatus(404);
     }
@@ -57,7 +57,7 @@ export const updateCourse = async (req, res) => {
   const { name, teacher_id } = req.body;
 
   try {
-    const result = await coursesRepository.updateCourse(id, name, teacher_id);
+    const result = await repository.updateCourse(id, name, teacher_id);
 
     if (result.rowCount === 0) {
       return res.sendStatus(404);
@@ -78,7 +78,7 @@ export const updateCourseTeacher = async (req, res) => {
   const { teacher_id: teacherId } = req.body;
 
   try {
-    const result = await coursesRepository.updateCourseTeacher(courseId, teacherId);
+    const result = await repository.updateCourseTeacher(courseId, teacherId);
 
     if (result.rowCount === 0) {
       return res.sendStatus(404);
@@ -99,7 +99,7 @@ export const addStudentToCourse = async (req, res) => {
   const { student_id: studentId } = req.body;
 
   try {
-    const result = await coursesRepository.addStudentToCourse(courseId, studentId);
+    const result = await repository.addStudentToCourse(courseId, studentId);
     return res.status(201).json(result.rows[0]);
   } catch (err) {
     const status = err.code === "23503" ? 404 : err.code === "23505" ? 409 : 500;
@@ -115,7 +115,7 @@ export const removeStudentFromCourse = async (req, res) => {
   const { courseId, studentId } = req.params;
 
   try {
-    const result = await coursesRepository.removeStudentFromCourse(courseId, studentId);
+    const result = await repository.removeStudentFromCourse(courseId, studentId);
 
     if (result.rowCount === 0) {
       return res.sendStatus(404);

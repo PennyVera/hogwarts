@@ -1,16 +1,15 @@
 import express from "express";
+import * as controller from "../controllers/teachers.controller.js";
 
-import * as teachersController from "../controllers/teachers.controller.js";
-
-export const teachersRouter = express.Router();
+export const router = express.Router();
 
 // Get all teachers R
-teachersRouter.get("/", teachersController.getAllTeachers);
+router.get("/", controller.getAllTeachers);
 // Get specific teacher R
-teachersRouter.get("/:id", teachersController.getSingleTeacher);
+router.get("/:id", controller.getSingleTeacher);
 // Post new teacher C
-teachersRouter.post("/", teachersController.createTeacher);
+router.post("/", controller.createTeacher);
 // Put teacher U
-teachersRouter.put("/:id", teachersController.updateTeacher);
+router.put("/:id", controller.updateTeacher);
 // Delete teacher D
-teachersRouter.delete("/:id", teachersController.deleteTeacher);
+router.delete("/:id", controller.deleteTeacher);

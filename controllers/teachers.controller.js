@@ -1,9 +1,9 @@
-import * as teachersRepository from "../repositories/teachers.repository.js";
+import * as repository from "../repositories/teachers.repository.js";
 
 // Get all teachers
 export const getAllTeachers = async (req, res) => {
   try {
-    const allTeachers = await teachersRepository.getAllTeachers();
+    const allTeachers = await repository.getAllTeachers();
     res.json(allTeachers);
   } catch (err) {
     res.status(500).json({ error: "database error", code: err.code });
@@ -13,7 +13,7 @@ export const getAllTeachers = async (req, res) => {
 // Get a single teacher
 export const getSingleTeacher = async (req, res) => {
   try {
-    const singleTeacher = await teachersRepository.getSingleTeacher(req.params.id);
+    const singleTeacher = await repository.getSingleTeacher(req.params.id);
     if (singleTeacher.rowCount === 0) return res.sendStatus(404);
     res.status(200).json(singleTeacher.rows[0]);
   } catch (err) {
@@ -24,7 +24,7 @@ export const getSingleTeacher = async (req, res) => {
 // Create a new teacher
 export const createTeacher = async (req, res) => {
   try {
-    const newTeacher = await teachersRepository.createTeacher(req, res);
+    const newTeacher = await repository.createTeacher(req, res);
     res.status(201).json(newTeacher);
   } catch (err) {
     res.status(500).json({ error: "database error", code: err.code });
@@ -38,7 +38,7 @@ export const updateTeacher = async (req, res) => {
   const { name, house_id } = req.body;
 
   try {
-    const result = await teachersRepository.updateTeacher(id, name, house_id);
+    const result = await repository.updateTeacher(id, name, house_id);
 
     if (result.rowCount === 0) {
       return res.sendStatus(404);
@@ -58,7 +58,7 @@ export const deleteTeacher = async (req, res) => {
   // Get the selected teacher ID
   const { id } = req.params;
   try {
-    const result = await teachersRepository.deleteTeacher(id);
+    const result = await repository.deleteTeacher(id);
     if (result.rowCount === 0) {
       return res.sendStatus(404);
     }
