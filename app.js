@@ -1,10 +1,11 @@
 import express from "express";
 
 // import routers
-import { housesRouter } from "./routes/houses.router.js";
-import { teachersRouter } from "./routes/teachers.router.js";
-import { studentsRouter } from "./routes/students.router.js";
-import { coursesRouter } from "./routes/courses.router.js";
+import { router as housesRouter } from "./routes/houses.router.js";
+import { router as teachersRouter } from "./routes/teachers.router.js";
+import { router as studentsRouter } from "./routes/students.router.js";
+import { router as coursesRouter } from "./routes/courses.router.js";
+import errorhandler from "./errorhandler/errorhandler.js";
 
 const app = express();
 app.use(express.json());
@@ -26,5 +27,7 @@ app.use("/students/", studentsRouter);
 
 // ---- Courses ---- //
 app.use("/courses/", coursesRouter);
+
+app.use(errorhandler);
 
 export default app;
