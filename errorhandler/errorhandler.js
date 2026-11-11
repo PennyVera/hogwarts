@@ -1,7 +1,7 @@
 export default (err, req, res, next) => {
   console.error(err.message);
 
-  const statusCode = err.statusCode;
+  const statusCode = err.statusCode || 500;
   let error = "Internal server error";
   if (statusCode === 404) {
     error = "not found";

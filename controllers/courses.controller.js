@@ -1,131 +1,108 @@
 import * as repository from "../repositories/courses.repository.js";
+import HTTPError from "../errorhandler/HTTPError.js";
 
 // Get all courses
-export const getAllCourses = async (req, res) => {
-  // try {
-  const allCourses = await repository.getAllCourses();
-  res.json(allCourses);
-  // } catch (err) {
-  //   res.status(500).json({ error: "database error", code: err.code });
-  // }
-};
+export async function getAllCourses(req, res) {
+  const all = await repository.getAllCourses();
+  return res.status(200).json(all);
+}
 
 // Get a single course
-export const getSingleCourse = async (req, res) => {
-  // try {
-  const singleCourse = await repository.getSingleCourse(req.params.id);
-  if (singleCourse.rowCount === 0) return res.sendStatus(404);
-  res.status(200).json(singleCourse.rows[0]);
-  // } catch (err) {
-  //   res.status(500).json({ error: "database error", code: err.code });
-  // }
-};
+export async function getSingleCourse(req, res) {
+  const id = req.params.id;
+  const single = await repository.getSingleCourse(id);
+
+  if (single.rowCount === 0) {
+    throw new HTTPError(404, "Course not found");
+  }
+  return res.status(200).json(single.rows[0]);
+}
 
 // Create a new course
-export const createCourse = async (req, res) => {
-  // The request body contains the course name and teacher ID.
-  // try {
-  const newCourse = await repository.createCourse(req, res);
-  res.status(201).json(newCourse);
-  // } catch (err) {
-  //   res.status(500).json({ error: "database error", code: err.code });
-  // }
-};
+export async function createCourse(req, res) {
+  const { name, teacher_id } = req.body;
 
-// Delete a course
-export const deleteCourse = async (req, res) => {
-  // Get the selected course ID
-  const { id } = req.params;
-  // try {
-  const result = await repository.deleteCourse(id);
-  if (result.rowCount === 0) {
-    return res.sendStatus(404);
+  if (!name || !teacher_id) {
+    throw new HTTPError(400, "Course name and teacher_id are required");
   }
-  return res.status(200).json({ message: "Course deleted successfully" });
-  // } catch (err) {
-  //   return res.status(500).json({
-  //     error: "database error",
-  //     code: err.code,
-  //   });
-  // }
-};
+
+  const createdResult = await repository.createCourse(req, res);
+  return res.status(201).json(createdResult);
+}
 
 // Update a course
-export const updateCourse = async (req, res) => {
-  // Get the selected course ID and updated values from the request
+export async function updateCourse(req, res) {
   const { id } = req.params;
   const { name, teacher_id } = req.body;
 
-  // try {
-  const result = await repository.updateCourse(id, name, teacher_id);
-
-  if (result.rowCount === 0) {
-    return res.sendStatus(404);
+  if (!name || !teacher_id) {
+    throw new HTTPError(400, "Course name and teacher_id are required");
   }
 
-  return res.status(200).json(result.rows[0]);
-  // } catch (err) {
-  //   return res.status(500).json({
-  //     error: "database error",
-  //     code: err.code,
-  //   });
-  // }
-};
+  const updatedResult = await repository.updateCourse(id, name, teacher_id);
+
+  if (updatedResult.rowCount === 0) {
+    throw new HTTPError(404, "Course not found");
+  }
+
+  return res.status(200).json(updatedResult.rows[0]);
+}
+
+// Delete a course
+export async function deleteCourse(req, res) {
+  const { id } = req.params;
+  const deleteResult = await repository.deleteCourse(id);
+
+  if (deleteResult.rowCount === 0) {
+    throw new HTTPError(404, "Course not found");
+  }
+  return res.status(200).json({ message: "Course deleted successfully" });
+}
 
 // Change the teacher assigned to a course
-export const updateCourseTeacher = async (req, res) => {
+export async function updateCourseTeacher(req, res) {
   const { courseId } = req.params;
   const { teacher_id: teacherId } = req.body;
 
-  // try {
-  const result = await repository.updateCourseTeacher(courseId, teacherId);
-
-  if (result.rowCount === 0) {
-    return res.sendStatus(404);
+  if (!courseId || !teacherId) {
+    throw new HTTPError(400, "Course ID and teacher_id are required");
   }
 
-  return res.status(200).json(result.rows[0]);
-  // } catch (err) {
-  //   return res.status(err.code === "23503" ? 404 : 500).json({
-  //     error: err.code === "23503" ? "teacher not found" : "database error",
-  //     code: err.code,
-  //   });
-  // }
-};
+  const changeResult = await repository.updateCourseTeacher(courseId, teacherId);
+
+  if (changeResult.rowCount === 0) {
+    throw new HTTPError(404, "Course not found");
+  }
+
+  return res.status(200).json(changeResult.rows[0]);
+}
 
 // Add a student to a course
-export const addStudentToCourse = async (req, res) => {
+export async function addStudentToCourse(req, res) {
   const { courseId } = req.params;
   const { student_id: studentId } = req.body;
 
-  // try {
-  const result = await repository.addStudentToCourse(courseId, studentId);
-  return res.status(201).json(result.rows[0]);
-  // } catch (err) {
-  //   const status = err.code === "23503" ? 404 : err.code === "23505" ? 409 : 500;
-  //   return res.status(status).json({
-  //     error: status === 404 ? "course or student not found" : status === 409 ? "student is already enrolled" : "database error",
-  //     code: err.code,
-  //   });
-  // }
-};
-
-// Remove a student from a course
-export const removeStudentFromCourse = async (req, res) => {
-  const { courseId, studentId } = req.params;
-
-  // try {
-  const result = await repository.removeStudentFromCourse(courseId, studentId);
-
-  if (result.rowCount === 0) {
-    return res.sendStatus(404);
+  if (!courseId || !studentId) {
+    throw new HTTPError(400, "Course ID and student_id are required");
   }
 
-  return res.status(200).json(result.rows[0]);
-  // } catch (err) {
-  //   return res.status(500).json({
-  //     error: "database error",
-  //     code: err.code,
-  //   });
-  // }
-};
+  const addResult = await repository.addStudentToCourse(courseId, studentId);
+  return res.status(201).json(addResult.rows[0]);
+}
+
+// Remove a student from a course
+export async function removeStudentFromCourse(req, res) {
+  const { courseId, studentId } = req.params;
+
+  if (!courseId || !studentId) {
+    throw new HTTPError(400, "Course ID and student ID are required");
+  }
+
+  const removeResult = await repository.removeStudentFromCourse(courseId, studentId);
+
+  if (removeResult.rowCount === 0) {
+    throw new HTTPError(404, "Student not found in the course");
+  }
+
+  return res.status(200).json(removeResult.rows[0]);
+}

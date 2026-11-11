@@ -3,8 +3,8 @@ import HTTPError from "../errorhandler/HTTPError.js";
 
 // Get all teachers
 export async function getAllTeachers(req, res) {
-  const allTeachers = await repository.getAllTeachers();
-  res.status(200).json(allTeachers);
+  const all = await repository.getAllTeachers();
+  return res.status(200).json(all);
 }
 
 // Get a single teacher
@@ -22,20 +22,19 @@ export async function getSingleTeacher(req, res) {
 export async function createTeacher(req, res) {
   const { name, house_id } = req.body;
 
-  if (!name || house_id === undefined) {
+  if (!name || !house_id) {
     throw new HTTPError(400, "Teacher name and house_id are required");
   }
 
-  const newTeacher = await repository.createTeacher(req, res);
-  return res.status(201).json(newTeacher);
+  const createdResult = await repository.createTeacher(req, res);
+  return res.status(201).json(createdResult);
 }
 
 // Update a teacher
-export const updateTeacher = async (req, res) => {
-  // Get the selected teacher ID and updated values from the request
+export async function updateTeacher(req, res) {
   const id = req.params.id;
   const { name, house_id } = req.body;
-  if (!name || house_id === undefined) {
+  if (!name || !house_id) {
     throw new HTTPError(400, "Teacher name and house_id are required");
   }
 
@@ -45,15 +44,14 @@ export const updateTeacher = async (req, res) => {
     throw new HTTPError(404, "Teacher not found");
   }
   return res.status(200).json(updateResult.rows[0]);
-};
+}
 
 // Delete a teacher
-export const deleteTeacher = async (req, res) => {
-  // Get the selected teacher ID
+export async function deleteTeacher(req, res) {
   const { id } = req.params;
   const deleteResult = await repository.deleteTeacher(id);
   if (deleteResult.rowCount === 0) {
     throw new HTTPError(404, "Teacher not found");
   }
   return res.status(200).json({ message: "Teacher deleted successfully" });
-};
+}
