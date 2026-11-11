@@ -4,7 +4,10 @@ import HTTPError from "../errorhandler/HTTPError.js";
 // get all houses
 export const getAllHouses = async (req, res) => {
   const allHouses = await repository.getAllHouses();
-  res.json(allHouses);
+  if (allHouses.rowCount === 0) {
+    throw new HTTPError(404, "Houses not found");
+  }
+  res.status(200).json(allHouses.rows);
 };
 
 // get single house
