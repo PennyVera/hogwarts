@@ -1,52 +1,33 @@
 import * as repository from "../repositories/students.repository.js";
+import HTTPError from "../errorhandler/HTTPError.js";
 
 // Get all students
 export const getAllStudents = async (req, res) => {
-  // try {
   const allStudents = await repository.getAllStudents();
-  res.json(allStudents);
-  // } catch (err) {
-  //   res.status(500).json({ error: "database error", code: err.code });
-  // }
+  res.status(200).json(allStudents);
 };
 
 // Get a single student
 export const getSingleStudent = async (req, res) => {
-  // try {
-  const singleStudent = await repository.getSingleStudent(req.params.id);
-  if (singleStudent.rowCount === 0) return res.sendStatus(404);
-  res.status(200).json(singleStudent.rows[0]);
-  // } catch (err) {
-  //   res.status(500).json({ error: "database error", code: err.code });
-  // }
+  const id = req.params.id;
+  const single = await repository.getSingleStudent(id);
+
+  if (single.rowCount === 0) {
+    throw new HTTPError(404, "Student not found");
+  }
+  res.status(200).json(single.rows[0]);
 };
 
 // Create a new student
 export const createStudent = async (req, res) => {
-  // try {
-  const newStudent = await repository.createStudent(req, res);
-  res.status(201).json(newStudent);
-  // } catch (err) {
-  //   res.status(500).json({ error: "database error", code: err.code });
-  // }
-};
+  const { name, house_id, semester } = req.body;
 
-// Delete a student
-export const deleteStudent = async (req, res) => {
-  // Get the selected student ID
-  const { id } = req.params;
-  // try {
-  const result = await repository.deleteStudent(id);
-  if (result.rowCount === 0) {
-    return res.sendStatus(404);
+  if (!name || house_id === undefined || semester === undefined) {
+    throw new HTTPError(400, "Student name, house_id, and semester are required");
   }
-  return res.status(200).json({ message: "Student deleted successfully" });
-  // } catch (err) {
-  //   return res.status(500).json({
-  //     error: "database error",
-  //     code: err.code,
-  //   });
-  // }
+
+  const newStudent = await repository.createStudent(req, res);
+  return res.status(201).json(newStudent);
 };
 
 // Update a student
@@ -54,19 +35,26 @@ export const updateStudent = async (req, res) => {
   // Get the selected student ID and updated values from the request
   const { id } = req.params;
   const { name, house_id, semester } = req.body;
-
-  // try {
-  const result = await repository.updateStudent(id, name, house_id, semester);
-
-  if (result.rowCount === 0) {
-    return res.sendStatus(404);
+  if (!name || house_id === undefined || semester === undefined) {
+    throw new HTTPError(400, "Student name, house_id, and semester are required");
   }
 
-  return res.status(200).json(result.rows[0]);
-  // } catch (err) {
-  //   return res.status(500).json({
-  //     error: "database error",
-  //     code: err.code,
-  //   });
-  // }
+  const updateResult = await repository.updateStudent(id, name, house_id, semester);
+
+  if (updateResult.rowCount === 0) {
+    throw new HTTPError(404, "Student not found");
+  }
+
+  return res.status(200).json(updateResult.rows[0]);
+};
+
+// Delete a student
+export const deleteStudent = async (req, res) => {
+  // Get the selected student ID
+  const { id } = req.params;
+  const deleteResult = await repository.deleteStudent(id);
+  if (deleteResult.rowCount === 0) {
+    throw new HTTPError(404, "Student not found");
+  }
+  return res.status(200).json({ message: "Student deleted successfully" });
 };
