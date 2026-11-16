@@ -1,7 +1,7 @@
 import { pool } from "../db.js";
 
 // Get all teachers
-export const getAllTeachers = async () => {
+export async function getAllTeachers() {
   const result = await pool.query(
     /*sql*/
     `SELECT teachers.id, teachers.name, houses.name AS house
@@ -13,7 +13,7 @@ export const getAllTeachers = async () => {
 };
 
 // Get a single teacher
-export const getSingleTeacher = async (id) => {
+export async function getSingleTeacher(id) {
   const one = await pool.query(
     /*sql*/
     `SELECT teachers.id, teachers.name, houses.name AS house 
@@ -27,14 +27,14 @@ export const getSingleTeacher = async (id) => {
 };
 
 // Create a new teacher
-export const createTeacher = async (teacher) => {
+export async function createTeacher(teacher) {
   const result = await pool.query("INSERT INTO teachers (name, house_id) VALUES ($1, $2) RETURNING *", [teacher.name, teacher.house_id]);
 
   return result.rows[0];
 };
 
 // Update a teacher
-export const updateTeacher = async (id, teacher) => {
+export async function updateTeacher(id, teacher) {
   const result = await pool.query(
     `UPDATE teachers
      SET name = $1, house_id = $2
@@ -51,7 +51,7 @@ export const updateTeacher = async (id, teacher) => {
 };
 
 // Delete a teacher
-export const deleteTeacher = async (id) => {
+export async function deleteTeacher(id) {
   const client = await pool.connect();
 
   try {
