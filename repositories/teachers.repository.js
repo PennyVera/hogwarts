@@ -2,43 +2,52 @@ import { pool } from "../db.js";
 
 // Get all teachers
 export const getAllTeachers = async () => {
-  const result = await pool.query(/*sql*/ `SELECT teachers.id, teachers.name, houses.name AS house
+  const result = await pool.query(
+    /*sql*/
+    `SELECT teachers.id, teachers.name, houses.name AS house
   FROM teachers 
   LEFT JOIN houses 
-  ON teachers.house_id = houses.id`);
+  ON teachers.house_id = houses.id`,
+  );
   return result.rows;
 };
 
 // Get a single teacher
 export const getSingleTeacher = async (id) => {
-  const one = await pool.query(/*sql*/ `SELECT teachers.id, teachers.name, houses.name AS house 
+  const one = await pool.query(
+    /*sql*/
+    `SELECT teachers.id, teachers.name, houses.name AS house 
   FROM teachers 
   LEFT JOIN houses 
   ON teachers.house_id = houses.id 
-  WHERE teachers.id = $1`, [id]);
+  WHERE teachers.id = $1`,
+    [id],
+  );
   return one;
 };
 
 // Create a new teacher
-export const createTeacher = async (req, res) => {
-  const { name, house_id } = req.body;
-
-  const result = await pool.query("INSERT INTO teachers (name, house_id) VALUES ($1, $2) RETURNING *", [name, house_id]);
+export const createTeacher = async (teacher) => {
+  const result = await pool.query("INSERT INTO teachers (name, house_id) VALUES ($1, $2) RETURNING *", [teacher.name, teacher.house_id]);
 
   return result.rows[0];
 };
 
 // Update a teacher
-export const updateTeacher = async (id, name, house_id) => {
+export const updateTeacher = async (id, teacher) => {
   const result = await pool.query(
     `UPDATE teachers
      SET name = $1, house_id = $2
      WHERE id = $3
      RETURNING *`,
-    [name, house_id, id],
+    [teacher.name, teacher.house_id, id],
   );
 
-  return result;
+  if (result.rowCount === 0) {
+    return result;
+  }
+
+  return getSingleTeacher(id);
 };
 
 // Delete a teacher
