@@ -4,8 +4,8 @@ import { pool } from "../db.js";
 export async function getAllTeachers() {
   const result = await pool.query(
     /*sql*/
-    `SELECT teachers.id, teachers.name, houses.name AS house
-  FROM teachers 
+    `SELECT teachers.id, teachers.name, teachers.house_id, houses.name AS house
+  FROM teachers
   LEFT JOIN houses 
   ON teachers.house_id = houses.id`,
   );
@@ -16,8 +16,8 @@ export async function getAllTeachers() {
 export async function getSingleTeacher(id) {
   const one = await pool.query(
     /*sql*/
-    `SELECT teachers.id, teachers.name, houses.name AS house 
-  FROM teachers 
+    `SELECT teachers.id, teachers.name, teachers.house_id, houses.name AS house
+  FROM teachers
   LEFT JOIN houses 
   ON teachers.house_id = houses.id 
   WHERE teachers.id = $1`,
@@ -28,9 +28,13 @@ export async function getSingleTeacher(id) {
 
 // Create a new teacher
 export async function createTeacher(teacher) {
-  const result = await pool.query("INSERT INTO teachers (name, house_id) VALUES ($1, $2) RETURNING *", [teacher.name, teacher.house_id]);
+  const result = await pool.query(
+    "INSERT INTO teachers (name, house_id) VALUES ($1, $2) RETURNING id",
+    [teacher.name, teacher.house_id],
+  );
 
-  return result.rows[0];
+  const createdTeacher = await getSingleTeacher(result.rows[0].id);
+  return createdTeacher.rows[0];
 };
 
 // Update a teacher
@@ -47,7 +51,8 @@ export async function updateTeacher(id, teacher) {
     return result;
   }
 
-  return getSingleTeacher(id);
+  const updatedTeacher = await getSingleTeacher(id);
+  return updatedTeacher;
 };
 
 // Delete a teacher
