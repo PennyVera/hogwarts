@@ -1,6 +1,6 @@
 import * as repository from "../repositories/teachers.repository.js";
 import HTTPError from "../errorhandler/HTTPError.js";
-import { CreateTeacherDTO, UpdateTeacherDTO } from "../dtos/teacher.dto.js";
+import { CreateTeacherDTO, UpdateTeacherDTO } from "../dtos/teachers.dto.js";
 
 // Get all teachers
 export async function getAllTeachers(req, res) {
