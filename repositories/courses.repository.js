@@ -1,53 +1,66 @@
 import { pool } from "../db.js";
 
 // Get all courses
-export const getAllCourses = async () => {
+export async function getAllCourses() {
   const result = await pool.query(
-    `SELECT courses.*,
-            COALESCE(
-              ARRAY_AGG(courses_students.student_id)
-              FILTER (WHERE courses_students.student_id IS NOT NULL),
-              '{}'
-            ) AS student_ids
-     FROM courses
-     LEFT JOIN courses_students
-       ON courses.id = courses_students.course_id
-     GROUP BY courses.id
-     ORDER BY courses.id`,
+    `SELECT
+  c.id,
+  c.name AS course,
+  t.name AS teacher,
+  JSON_AGG(
+    JSON_BUILD_OBJECT(
+      'id', s.id,
+      'name', s.name
+    )
+  ) AS students
+FROM courses AS c
+JOIN teachers AS t
+  ON t.id = c.teacher_id
+LEFT JOIN courses_students AS cs
+  ON cs.course_id = c.id
+LEFT JOIN students AS s
+  ON s.id = cs.student_id
+GROUP BY c.id, c.name, t.name;`,
   );
 
   return result.rows;
 };
 
 // Get a single course
-export const getSingleCourse = async (id) => {
+export async function getSingleCourse(id) {
   return pool.query(
-    `SELECT courses.*,
-            COALESCE(
-              ARRAY_AGG(courses_students.student_id)
-              FILTER (WHERE courses_students.student_id IS NOT NULL),
-              '{}'
-            ) AS student_ids
-     FROM courses
-     LEFT JOIN courses_students
-       ON courses.id = courses_students.course_id
-     WHERE courses.id = $1
-     GROUP BY courses.id`,
+    `SELECT
+  c.id,
+  c.name AS course,
+  t.name AS teacher,
+  JSON_AGG(
+    JSON_BUILD_OBJECT(
+      'id', s.id,
+      'name', s.name
+    )
+  ) AS students
+FROM courses AS c
+JOIN teachers AS t
+  ON t.id = c.teacher_id
+LEFT JOIN courses_students AS cs
+  ON cs.course_id = c.id
+LEFT JOIN students AS s
+  ON s.id = cs.student_id
+WHERE c.id = $1
+GROUP BY c.id, c.name, t.name;`,
     [id],
   );
 };
 
 // Create a new course
-export const createCourse = async (req, res) => {
-  const { name, teacher_id } = req.body;
-
-  const result = await pool.query("INSERT INTO courses (name, teacher_id) VALUES ($1, $2) RETURNING *", [name, teacher_id]);
+export async function createCourse(course) {
+  const result = await pool.query("INSERT INTO courses (name, teacher_id) VALUES ($1, $2) RETURNING *", [course.name, course.teacher_id]);
 
   return result.rows[0];
 };
 
 // Update a course
-export const updateCourse = async (id, name, teacher_id) => {
+export async function updateCourse(id, name, teacher_id) {
   const result = await pool.query(
     `UPDATE courses
      SET name = $1, teacher_id = $2
@@ -60,7 +73,7 @@ export const updateCourse = async (id, name, teacher_id) => {
 };
 
 // Change the teacher assigned to a course
-export const updateCourseTeacher = async (courseId, teacherId) => {
+export async function updateCourseTeacher(courseId, teacherId) {
   return pool.query(
     `UPDATE courses
      SET teacher_id = $1
@@ -71,7 +84,7 @@ export const updateCourseTeacher = async (courseId, teacherId) => {
 };
 
 // Add a student to a course
-export const addStudentToCourse = async (courseId, studentId) => {
+export async function addStudentToCourse(courseId, studentId) {
   return pool.query(
     `INSERT INTO courses_students (course_id, student_id)
      VALUES ($1, $2)
@@ -81,7 +94,7 @@ export const addStudentToCourse = async (courseId, studentId) => {
 };
 
 // Remove a student from a course
-export const removeStudentFromCourse = async (courseId, studentId) => {
+export async function removeStudentFromCourse(courseId, studentId) {
   return pool.query(
     `DELETE FROM courses_students
      WHERE course_id = $1 AND student_id = $2
@@ -91,7 +104,7 @@ export const removeStudentFromCourse = async (courseId, studentId) => {
 };
 
 // Delete a course
-export const deleteCourse = async (id) => {
+export async function deleteCourse(id) {
   const client = await pool.connect();
 
   try {
