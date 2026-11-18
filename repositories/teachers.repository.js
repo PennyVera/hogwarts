@@ -4,7 +4,8 @@ import { pool } from "../db.js";
 export async function getAllTeachers() {
   const result = await pool.query(
     /*sql*/
-    `SELECT teachers.id, teachers.name, teachers.house_id, houses.name AS house
+    `SELECT teachers.id, teachers.name, houses.name AS house,
+      teachers.employment_start, teachers.currently_active, teachers.deceased
   FROM teachers
   LEFT JOIN houses 
   ON teachers.house_id = houses.id`,
@@ -16,7 +17,8 @@ export async function getAllTeachers() {
 export async function getSingleTeacher(id) {
   const one = await pool.query(
     /*sql*/
-    `SELECT teachers.id, teachers.name, teachers.house_id, houses.name AS house
+    `SELECT teachers.id, teachers.name, houses.name AS house,
+      teachers.employment_start, teachers.currently_active, teachers.deceased
   FROM teachers
   LEFT JOIN houses 
   ON teachers.house_id = houses.id 
@@ -29,8 +31,17 @@ export async function getSingleTeacher(id) {
 // Create a new teacher
 export async function createTeacher(teacher) {
   const result = await pool.query(
-    "INSERT INTO teachers (name, house_id) VALUES ($1, $2) RETURNING id",
-    [teacher.name, teacher.house_id],
+    `INSERT INTO teachers
+       (name, house_id, employment_start, currently_active, deceased)
+     VALUES ($1, $2, $3, $4, $5)
+     RETURNING id`,
+    [
+      teacher.name,
+      teacher.house_id,
+      teacher.employment_start,
+      teacher.currently_active,
+      teacher.deceased,
+    ],
   );
 
   const createdTeacher = await getSingleTeacher(result.rows[0].id);
@@ -41,10 +52,18 @@ export async function createTeacher(teacher) {
 export async function updateTeacher(id, teacher) {
   const result = await pool.query(
     `UPDATE teachers
-     SET name = $1, house_id = $2
-     WHERE id = $3
+     SET name = $1, house_id = $2, employment_start = $3,
+         currently_active = $4, deceased = $5
+     WHERE id = $6
      RETURNING *`,
-    [teacher.name, teacher.house_id, id],
+    [
+      teacher.name,
+      teacher.house_id,
+      teacher.employment_start,
+      teacher.currently_active,
+      teacher.deceased,
+      id,
+    ],
   );
 
   if (result.rowCount === 0) {
