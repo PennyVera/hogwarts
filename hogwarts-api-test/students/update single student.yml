@@ -12,7 +12,9 @@ http:
       {
         "name": "harry potter",
         "semester": 1,
-        "house_id": 2
+        "house_id": 2,
+        "birthday": "1980-07-31",
+        "school_year": 1
       }
   auth: inherit
 

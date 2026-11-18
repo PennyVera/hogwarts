@@ -10,8 +10,11 @@ http:
     type: json
     data: |-
       {
-        "name":"potion",
-        "teacher_id":"5"
+        "name": "potion",
+        "teacher_id": 5,
+        "type": "core",
+        "level": "OWL",
+        "school_year": 1
       }
   auth: inherit
 
