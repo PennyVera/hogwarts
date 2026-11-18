@@ -32,7 +32,7 @@ export async function updateCourse(req, res) {
   const { id } = req.params;
   const course = UpdateCourseDTO.parse(req.body);
 
-  const updatedResult = await repository.updateCourse(id, course.name, course.teacher_id);
+  const updatedResult = await repository.updateCourse(id, course);
 
   if (updatedResult.rowCount === 0) {
     throw new HTTPError(404, "Course not found");

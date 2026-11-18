@@ -8,6 +8,9 @@ export async function getAllCourses() {
   c.name AS course,
   c.teacher_id,
   t.name AS teacher,
+  c.type,
+  c.level,
+  c.school_year,
   JSON_AGG(
     JSON_BUILD_OBJECT(
       'id', s.id,
@@ -35,6 +38,9 @@ export async function getSingleCourse(id) {
   c.name AS course,
   c.teacher_id,
   t.name AS teacher,
+  c.type,
+  c.level,
+  c.school_year,
   JSON_AGG(
     JSON_BUILD_OBJECT(
       'id', s.id,
@@ -57,8 +63,8 @@ GROUP BY c.id, c.name, c.teacher_id, t.name;`,
 // Create a new course
 export async function createCourse(course) {
   const result = await pool.query(
-    "INSERT INTO courses (name, teacher_id) VALUES ($1, $2) RETURNING id",
-    [course.name, course.teacher_id],
+    "INSERT INTO courses (name, teacher_id, type, level, school_year) VALUES ($1, $2, $3, $4, $5) RETURNING id",
+    [course.name, course.teacher_id, course.type, course.level, course.school_year],
   );
 
   const createdCourse = await getSingleCourse(result.rows[0].id);
@@ -66,13 +72,13 @@ export async function createCourse(course) {
 };
 
 // Update a course
-export async function updateCourse(id, name, teacher_id) {
+export async function updateCourse(id, course) {
   const result = await pool.query(
     `UPDATE courses
-     SET name = $1, teacher_id = $2
-     WHERE id = $3
+     SET name = $1, teacher_id = $2, type = $3, level = $4, school_year = $5
+     WHERE id = $6
      RETURNING id`,
-    [name, teacher_id, id],
+    [course.name, course.teacher_id, course.type, course.level, course.school_year, id],
   );
 
   if (result.rowCount === 0) {
