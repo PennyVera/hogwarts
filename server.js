@@ -2,6 +2,6 @@ import app from "./app.js";
 
 const port = 3000;
 
-app.listen(port, () => {
+app.listen(port, function () {
   console.log(`Hogwarts API listening on port ${port}`);
 });

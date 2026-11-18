@@ -41,7 +41,10 @@ Teacher request body:
 ```json
 {
   "name": "Minerva McGonagall",
-  "house_id": 1
+  "house_id": 1,
+  "employment_start": "1990-09-01",
+  "currently_active": true,
+  "deceased": false
 }
 ```
 
@@ -61,7 +64,9 @@ Student request body:
 {
   "name": "Harry Potter",
   "house_id": 1,
-  "semester": 1
+  "semester": 1,
+  "birthday": "1980-07-31",
+  "school_year": 1
 }
 ```
 
@@ -78,12 +83,16 @@ Student request body:
 | POST | `/courses/:courseId/students` | Adds a student to a course. |
 | DELETE | `/courses/:courseId/students/:studentId` | Removes a student from a course. |
 
-Course request body:
+Course request body. `OWL` courses must be in school years 1-5, and `NEWT`
+courses must be in school years 6-7:
 
 ```json
 {
   "name": "Potions",
-  "teacher_id": 5
+  "teacher_id": 5,
+  "type": "core",
+  "level": "OWL",
+  "school_year": 1
 }
 ```
 
